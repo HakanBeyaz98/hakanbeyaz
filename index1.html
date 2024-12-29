@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barkod ve QR Kod Oluşturma Sistemi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #f4f4f9, #dbe9f4); /* Yumuşak geçişli renkler */
+            transition: background-color 1s ease;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hafif gölge efekti */
+            background: rgba(255, 255, 255, 0.8); /* Beyazı biraz saydam yaparak geçiş efekti sağlanır */
+            backdrop-filter: blur(10px); /* Arka planı bulanıklaştırarak şeffaf beyaz kutu efekti */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        input, select {
+            padding: 6px; /* Daha küçük padding */
+            width: 30%; /* Input genişliği daha da küçültüldü */
+            margin-bottom: 20px; /* Daha fazla boşluk ekledik */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.9em; /* Yazı boyutu biraz küçültüldü */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        img {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        svg {
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .generated-text {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Barkod ve QR Kod Oluşturma Sistemi</h1>
+        <div class="footer">Hakan Beyaz tarafından yapılmıştır.</div>
+
+        <select id="barcode-type">
+            <option value="">-- Kod Tipi Seçin --</option>
+            <option value="QRCODE">QR Kod</option>
+            <option value="CODE39">Code 39</option>
+            <option value="CODE128">Code 128</option>
+        </select>
+
+        <input type="text" id="codeInput" placeholder="Metni buraya yazın">
+        
+        <div class="buttons">
+            <button onclick="generateCode()">Kod Oluştur</button>
+            <button onclick="autoPrintCode()">Göster ve Yazdır</button>
+        </div>
+
+        <div id="outputContainer">
+            <div id="barcodeContainer"></div>
+            <div id="qrCodeContainer"></div>
+        </div>
+
+        <div id="textContainer" class="generated-text"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script>
+        function generateCode() {
+            const codeType = document.getElementById('barcode-type').value;
+            const codeInput = document.getElementById('codeInput').value.trim();
+            const barcodeContainer = document.getElementById('barcodeContainer');
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const textContainer = document.getElementById('textContainer');
+
+            barcodeContainer.innerHTML = '';
+            qrCodeContainer.innerHTML = '';
+            textContainer.innerHTML = '';
+
+            if (!codeType || !codeInput) {
+                alert('Lütfen kod tipi seçin ve metin girin!');
+                return;
+            }
+
+            if (codeType === 'QRCODE') {
+                const qrCodeImg = document.createElement('img');
+                qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(codeInput)}&size=150x150`;
+                qrCodeImg.alt = 'QR Code';
+                qrCodeContainer.appendChild(qrCodeImg);
+                textContainer.innerHTML = `QR Kod Metni: ${codeInput}`;
+            } else {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.id = 'barcode';
+                barcodeContainer.appendChild(svg);
+                JsBarcode(svg, codeInput, {
+                    format: codeType,
+                    displayValue: true,
+                    fontSize: 16
+                });
+                textContainer.innerHTML = `Barkod Metni: ${codeInput}`;
+            }
+        }
+
+        function autoPrintCode() {
+            generateCode();
+
+            const codeInput = document.getElementById('codeInput').value.trim();
+            const codeType = document.getElementById('barcode-type').value;
+            const outputContent = codeType === 'QRCODE'
+                ? document.getElementById('qrCodeContainer').innerHTML
+                : document.getElementById('barcodeContainer').innerHTML;
+            const textContent = document.getElementById('textContainer').innerHTML;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Kod Yazdır</title>
+                    <style>
+                        body {
+                            text-align: center;
+                            font-family: Arial, sans-serif;
+                        }
+                        h1 {
+                            margin-bottom: 20px;
+                        }
+                    </style>
+                </head>
+                <body onload="window.print();">
+                    <h1>${codeInput}</h1>
+                    <div>${outputContent}</div>
+                    <div class="generated-text">${textContent}</div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Function to change the background color automatically at regular intervals
+        function changeBackgroundColor() {
+            const colors = ['#f4f4f9', '#dbe9f4', '#f9e4e4', '#e1f4e1', '#f4f4d1'];
+            setInterval(() => {
+                document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            }, 5000); // Change color every 5 seconds
+        }
+
+        // Call the function on page load
+        window.onload = changeBackgroundColor;
+    </script>
+</body>
+</html>
