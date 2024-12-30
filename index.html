@@ -14,17 +14,19 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background: linear-gradient(135deg, #f4f4f9, #dbe9f4); /* Yumuşak geçişli renkler */
+            background-image: url('https://i.ibb.co/vJXpnTH/123.png'); /* Arka plan resmi ekleniyor */
+            background-size: cover; /* Resmi tüm ekranı kaplayacak şekilde ayarlıyoruz */
+            background-position: center; /* Resmi ortalıyoruz */
+            background-repeat: no-repeat; /* Resmin tekrarlanmasını engelliyoruz */
             transition: background-color 1s ease;
         }
 
         .container {
             text-align: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.8); /* Sayfanın üstündeki kutu beyaz ve saydam olacak */
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hafif gölge efekti */
-            background: rgba(255, 255, 255, 0.8); /* Beyazı biraz saydam yaparak geçiş efekti sağlanır */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px); /* Arka planı bulanıklaştırarak şeffaf beyaz kutu efekti */
         }
 
@@ -34,12 +36,12 @@
         }
 
         input, select {
-            padding: 6px; /* Daha küçük padding */
-            width: 30%; /* Input genişliği daha da küçültüldü */
-            margin-bottom: 20px; /* Daha fazla boşluk ekledik */
+            padding: 6px;
+            width: 30%;
+            margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 0.9em; /* Yazı boyutu biraz küçültüldü */
+            font-size: 0.9em;
         }
 
         button {
@@ -186,17 +188,6 @@
             `);
             printWindow.document.close();
         }
-
-        // Function to change the background color automatically at regular intervals
-        function changeBackgroundColor() {
-            const colors = ['#f4f4f9', '#dbe9f4', '#f9e4e4', '#e1f4e1', '#f4f4d1'];
-            setInterval(() => {
-                document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            }, 5000); // Change color every 5 seconds
-        }
-
-        // Call the function on page load
-        window.onload = changeBackgroundColor;
     </script>
 </body>
 </html>
